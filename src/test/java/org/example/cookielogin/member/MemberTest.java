@@ -26,13 +26,6 @@ public class MemberTest {
 
             member.addRole(MemberRole.USER);
 
-            if(i > 6){
-                member.addRole(MemberRole.MEMBER);
-            }
-            if(i > 8){
-                member.addRole(MemberRole.ADMIN);
-            }
-
             memberRepository.save(member);
         }
     }

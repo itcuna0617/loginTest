@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.example.cookielogin.member.Member;
 import org.example.cookielogin.member.MemberRepository;
+import org.example.cookielogin.member.MemberRole;
 import org.example.cookielogin.security.JwtTokenProvider;
 import org.example.cookielogin.security.SecurityUserDetailService;
 import org.example.cookielogin.security.dto.TokenInfo;
@@ -38,7 +39,7 @@ public class AuthService {
     public Map login(Map<String, String> user, HttpServletResponse response) {
         // 사용자 인증 정보 생성
         UserDetails userDetails = userDetailService.loadUserByUsername(user.get("email"));
-        Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, user.get("pw"),
+        Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, user.get("password"),
                 userDetails.getAuthorities());
 
         // 인증 정보를 SecurityContextHolder에 설정(저장)
@@ -60,10 +61,10 @@ public class AuthService {
 
         Map result = new HashMap();
 
-        result.put("email : ", member.getEmail());
-        result.put("name : ", member.getName());
-        result.put("roles : ", member.getMemberRoleList());
-        result.put("accessToken : ", jwtToken.getAccessToken());
+        result.put("email", member.getEmail());
+        result.put("name", member.getName());
+        result.put("roles", member.getMemberRoleList());
+        result.put("accessToken", jwtToken.getAccessToken());
 
         // 쿠키 생성 및 설정
 //        Cookie accessToken = new Cookie("accessToken", jwtToken.getAccessToken());
@@ -100,7 +101,7 @@ public class AuthService {
         return result;
     }
 
-    public ResponseEntity<?> handleOAuth2Login(String provider, OAuth2AuthenticationToken authentication, HttpServletResponse response) {
+    public ResponseEntity<?> handleOAuth2Login(OAuth2AuthenticationToken authentication, HttpServletResponse response) {
         OAuth2User oAuth2User = authentication.getPrincipal();
 
         // 사용자 정보 추출
@@ -118,6 +119,7 @@ public class AuthService {
             member = new Member();
             member.setEmail(email);
             member.setName(name);
+            member.addRole(MemberRole.USER);
             // 필요한 경우 비밀번호와 역할 설정
             memberRepository.save(member);
         }

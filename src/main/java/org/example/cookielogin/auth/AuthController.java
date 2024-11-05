@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 @Log4j2
 @RequiredArgsConstructor
 @RestController
+@CrossOrigin(origins = "*")
 public class AuthController {
 
     private final AuthService authService;
@@ -43,11 +44,20 @@ public class AuthController {
         return authService.login(user, response);
     }
 
-//    @GetMapping("/login/oauth2/{provider}")
-//    public ResponseEntity<?> oauth2Login(@PathVariable String provider, OAuth2AuthenticationToken authentication, HttpServletResponse response) {
+//    @GetMapping("/login/oauth2/code/kakao")
+//    public ResponseEntity<?> oauth2Login(OAuth2AuthenticationToken authentication, HttpServletResponse response) {
+//        log.info("OAuth2AuthenticationToken: " + authentication);
 //        // OAuth2 인증 정보로 사용자 로그인 처리
-//        return authService.handleOAuth2Login(provider, authentication, response);
+//        return authService.handleOAuth2Login(authentication, response);
 //    }
+
+    @GetMapping("/login/oauth2/kakao")
+    public ResponseEntity<?> oauth2Login(OAuth2AuthenticationToken authentication, HttpServletResponse response) {
+
+//        log.info("OAuth2AuthenticationToken: " + authentication);
+        // OAuth2 인증 정보로 사용자 로그인 처리
+        return authService.handleOAuth2Login(authentication, response);
+    }
 
     @PostMapping("/logout")
     public String logout(HttpServletRequest request, HttpServletResponse response){

@@ -33,33 +33,16 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         String provider = userRequest.getClientRegistration().getRegistrationId();
 
         // 사용자 정보 추출
-        String email = null;
-        String name = null;
-        String nickname = null;
-        String profileImage = null;
+        Map<String, Object> attributes = oAuth2User.getAttributes();
 
-        if ("kakao".equals(provider)) {
-            Map<String, Object> attributes = oAuth2User.getAttributes();
+        // properties에서 nickname과 profile_image 가져오기
+        Map<String, Object> properties = (Map<String, Object>) attributes.get("properties");
+        String nickname = (String) properties.get("nickname");
+        String profileImage = (String) properties.get("profile_image");
 
-            // properties에서 nickname과 profile_image 가져오기
-            Map<String, Object> properties = (Map<String, Object>) attributes.get("properties");
-            nickname = (String) properties.get("nickname");
-            profileImage = (String) properties.get("profile_image");
-
-            // kakao_account에서 email 가져오기
-            Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
-            email = (String) kakaoAccount.get("email");
-        } else if ("google".equals(provider)) {
-            email = oAuth2User.getAttribute("email");
-            name = oAuth2User.getAttribute("name"); // Google의 이름
-            profileImage = oAuth2User.getAttribute("picture"); // Google의 프로필 이미지
-        } else if ("naver".equals(provider)) {
-            Map<String, Object> attributes = oAuth2User.getAttributes();
-            email = (String) attributes.get("email");
-            name = (String) attributes.get("name");
-            nickname = (String) attributes.get("nickname");
-            profileImage = (String) attributes.get("profile_image");
-        }
+        // kakao_account에서 email 가져오기
+        Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
+        String email = (String) kakaoAccount.get("email");
 
         // DB에 사용자 정보 저장 또는 업데이트
         Optional<Member> optionalMember = memberRepository.findByEmail(email);
@@ -71,7 +54,6 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
             // 신규 사용자 등록
             member = new Member();
             member.setEmail(email);
-            member.setName(name);
             member.setNickname(nickname);
             member.setProfileImage(profileImage);
             member.addRole(MemberRole.USER); // 기본 권한 설정
@@ -79,7 +61,6 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         }
 
         // 사용자 정보 업데이트
-        member.setName(name);
         member.setNickname(nickname);
         member.setProfileImage(profileImage);
         memberRepository.save(member);

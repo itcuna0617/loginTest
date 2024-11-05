@@ -16,13 +16,15 @@ public class Member {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int membereId;
+    private int memberId;
     private String email;        // 이메일
     private String name;         // 이름
     private String nickname;     // 별명
     private String profileImage; // 프로필 사진
     private String password;      // 비밀번호
-    @ElementCollection(fetch= FetchType.EAGER)
+
+//    @ElementCollection(fetch= FetchType.EAGER)
+    @ElementCollection(fetch= FetchType.LAZY)
     @Builder.Default
     private List<MemberRole> memberRoleList = new ArrayList<>();
 

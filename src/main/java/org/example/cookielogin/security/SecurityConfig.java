@@ -51,7 +51,7 @@ public class SecurityConfig {
         http.authorizeHttpRequests((authz)-> authz
                 .dispatcherTypeMatchers(DispatcherType.FORWARD).permitAll()//forward 요청은 모두 허용
                 .requestMatchers("/test").hasRole("USER")  //url이 /auth/로 시작하면 인증을 요구 ROLE_USER
-                .requestMatchers("/", "/register", "/error", "/login", "/read-img/**", "/blog/**", "/user/**", " /comments/commentList", "/comments/view", "/register", "/logout", " /image/**", "/posts/recommend", "/posts/postDetail", "/posts/main", "/posts/calendar").permitAll()
+//                .requestMatchers("/", "/register", "/error", "/login", "/read-img/**", "/blog/**", "/user/**", " /comments/commentList", "/comments/view", "/register", "/logout", " /image/**", "/posts/recommend", "/posts/postDetail", "/posts/main", "/posts/calendar").permitAll()
                 .anyRequest().permitAll()
         );
         //토큰 처리하는 필터를 현재 필터 앞에 붙임
@@ -76,7 +76,7 @@ public class SecurityConfig {
         config.setAllowCredentials(true);
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
-        config.setAllowedOrigins(Arrays.asList("http://localhost:8080", "http://localhost:5173", "127.0.0.1:5173"));
+        config.setAllowedOrigins(Arrays.asList("http://localhost:8080", "http://localhost:5173"));
         source.registerCorsConfiguration("/**", config);
         return source;
     }

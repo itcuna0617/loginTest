@@ -11,6 +11,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.util.Optional;
 
 @Log4j2
@@ -26,13 +27,18 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
-                                        Authentication authentication) {
+                                        Authentication authentication) throws IOException {
+
         String userId = authentication.getName();
+
+        log.info("userId = " + userId);
 
         Optional<Member> optionalMember = memberRepository.findByEmail(userId);
         Member member;
 
         member = optionalMember.get();
+
+        log.info("member = " + member);
 
         // JWT 토큰 생성
         TokenInfo tokenInfo = tokenProvider.generateToken(member.getEmail(), member.getName(), member.getMemberRoleList());
@@ -51,5 +57,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         response.addCookie(refreshTokenCookie);
         response.setHeader("Authorization", "Bearer " + accessToken);
+
+        response.sendRedirect("/dashboard");
     }
 }
