@@ -10,7 +10,6 @@ import org.example.cookielogin.member.MemberRole;
 import org.example.cookielogin.security.JwtTokenProvider;
 import org.example.cookielogin.security.SecurityUserDetailService;
 import org.example.cookielogin.security.dto.TokenInfo;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -21,7 +20,6 @@ import org.springframework.security.oauth2.client.authentication.OAuth2Authentic
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;

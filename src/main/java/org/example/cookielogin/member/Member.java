@@ -17,6 +17,8 @@ public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int memberId;
+    private String oauthId;
+    private String oauthType;
     private String email;        // 이메일
     private String name;         // 이름
     private String nickname;     // 별명

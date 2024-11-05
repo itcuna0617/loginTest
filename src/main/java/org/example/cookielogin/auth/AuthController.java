@@ -5,23 +5,17 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.example.cookielogin.member.MemberRole;
 import org.example.cookielogin.security.JwtTokenProvider;
 import org.example.cookielogin.security.SecurityUserDetailService;
-import org.example.cookielogin.security.dto.TokenInfo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Log4j2
 @RequiredArgsConstructor
@@ -29,7 +23,8 @@ import java.util.stream.Collectors;
 @CrossOrigin(origins = "*")
 public class AuthController {
 
-    private final AuthService authService;
+    @Autowired
+    private AuthService authService;
 
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
@@ -54,7 +49,8 @@ public class AuthController {
     @GetMapping("/login/oauth2/kakao")
     public ResponseEntity<?> oauth2Login(OAuth2AuthenticationToken authentication, HttpServletResponse response) {
 
-//        log.info("OAuth2AuthenticationToken: " + authentication);
+        log.info("login 실행");
+        log.info("OAuth2AuthenticationToken: " + authentication);
         // OAuth2 인증 정보로 사용자 로그인 처리
         return authService.handleOAuth2Login(authentication, response);
     }

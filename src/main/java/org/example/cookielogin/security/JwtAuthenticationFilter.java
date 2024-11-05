@@ -1,6 +1,5 @@
 package org.example.cookielogin.security;
 
-import io.jsonwebtoken.Jwts;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
@@ -12,11 +11,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.example.cookielogin.member.MemberRole;
 import org.example.cookielogin.security.dto.TokenInfo;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.util.StringUtils;
 import org.springframework.web.filter.GenericFilterBean;
 
 import java.io.IOException;
@@ -39,8 +36,8 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
         HttpServletResponse response = (HttpServletResponse) servletResponse; // HttpServletResponse로 캐스팅
 
         // 특정 경로에 대해서만 JWT 인증 체크
-        String path = request.getRequestURI();
-        if (isProtectedPath(path)) {
+//        String path = request.getRequestURI();
+//        if (isProtectedPath(path)) {
 
             // 1. Request Header에서 JWT 토큰 추출
             String accessToken = resolveAccessToken(request);
@@ -56,6 +53,8 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
                 log.info("Access Token 검증 완료 ");
                 // Access Token이 유효할 경우
                 Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
+
+                log.info("Authentication : " + authentication);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
 
                 log.info("인증된 사용자 : " + authentication.getName());
@@ -100,7 +99,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
 
                 log.info("새로운 Access Token 생성 완료: " + newTokens.getAccessToken());
             }
-        }
+//        }
 
         filterChain.doFilter(servletRequest, servletResponse);
     }
