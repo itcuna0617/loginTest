@@ -2,6 +2,7 @@ package org.example.cookielogin.security;
 
 import jakarta.servlet.DispatcherType;
 import lombok.RequiredArgsConstructor;
+import org.example.cookielogin.security.service.CustomOAuth2UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -27,6 +28,8 @@ public class SecurityConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final SecurityUserDetailService userDetailService;
+    private final CustomOAuth2UserService customOAuth2UserService;
+    private final OAuth2SuccessHandler oAuth2SuccessHandler;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -55,6 +58,11 @@ public class SecurityConfig {
         http.addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, userDetailService), UsernamePasswordAuthenticationFilter.class);
         //세션 정책을 stateless로 설정. 상태유지 안함.
         http.sessionManagement(configurer->configurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
+        http.oauth2Login(oauth2 -> oauth2
+                .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
+                .successHandler(oAuth2SuccessHandler)
+        );
         // 기본 로그아웃 비활성화
         http.logout().disable();
 

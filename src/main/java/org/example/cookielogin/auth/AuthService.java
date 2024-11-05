@@ -16,8 +16,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -45,7 +48,7 @@ public class AuthService {
         Optional<Member> optionalMember = memberRepository.findByEmail(user.get("email"));
 
         Member member = optionalMember.orElseThrow(() -> new IllegalArgumentException("가입되지 않은 이메일입니다."));
-        if(!passwordEncoder.matches(user.get("pw"), member.getPassword())){
+        if (!passwordEncoder.matches(user.get("password"), member.getPassword())) {
             throw new IllegalArgumentException("이메일 또는 비밀번호가 일치하지 않습니다.");
         }
 
@@ -97,4 +100,40 @@ public class AuthService {
         return result;
     }
 
+    public ResponseEntity<?> handleOAuth2Login(String provider, OAuth2AuthenticationToken authentication, HttpServletResponse response) {
+        OAuth2User oAuth2User = authentication.getPrincipal();
+
+        // 사용자 정보 추출
+        String email = oAuth2User.getAttribute("email");
+        String name = oAuth2User.getAttribute("name");
+
+        // 사용자 정보로 DB에 저장 또는 업데이트
+        Optional<Member> optionalMember = memberRepository.findByEmail(email);
+        Member member;
+
+        if (optionalMember.isPresent()) {
+            member = optionalMember.get();
+        } else {
+            // 신규 사용자 등록
+            member = new Member();
+            member.setEmail(email);
+            member.setName(name);
+            // 필요한 경우 비밀번호와 역할 설정
+            memberRepository.save(member);
+        }
+
+        // JWT 토큰 생성
+        TokenInfo tokenInfo = jwtTokenProvider.generateToken(member.getEmail(), member.getName(), member.getMemberRoleList());
+
+        // Refresh Token을 HttpOnly 쿠키에 저장
+        Cookie refreshTokenCookie = new Cookie("refreshToken", tokenInfo.getRefreshToken());
+        refreshTokenCookie.setPath("/");
+        refreshTokenCookie.setMaxAge(60 * 60 * 24); // 1일
+        refreshTokenCookie.setHttpOnly(true);
+        refreshTokenCookie.setSecure(true); // HTTPS 사용 시 true로 설정
+        response.addCookie(refreshTokenCookie);
+
+        // Access Token을 응답으로 반환
+        return ResponseEntity.ok(Map.of("accessToken", tokenInfo.getAccessToken()));
+    }
 }

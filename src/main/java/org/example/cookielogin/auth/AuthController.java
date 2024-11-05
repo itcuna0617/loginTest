@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,8 +38,16 @@ public class AuthController {
 
     @PostMapping("/login")
     public Map login(@RequestBody Map<String, String> user, HttpServletResponse response){
+        log.info(user.get("email"));
+        log.info(user.get("password"));
         return authService.login(user, response);
     }
+
+//    @GetMapping("/login/oauth2/{provider}")
+//    public ResponseEntity<?> oauth2Login(@PathVariable String provider, OAuth2AuthenticationToken authentication, HttpServletResponse response) {
+//        // OAuth2 인증 정보로 사용자 로그인 처리
+//        return authService.handleOAuth2Login(provider, authentication, response);
+//    }
 
     @PostMapping("/logout")
     public String logout(HttpServletRequest request, HttpServletResponse response){
