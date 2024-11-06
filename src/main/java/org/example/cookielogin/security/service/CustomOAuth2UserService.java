@@ -46,7 +46,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         member.setNickname((String)attributes.get("profile_nickname"));
         member.setProfileImage((String)attributes.get("profile_image"));
         member.addRole(MemberRole.USER); // 기본 권한 설정
-        memberRepository.save(member); // 신규 사용자 저장
+//        memberRepository.save(member); // 신규 사용자 저장
 
         authorities = List.of(new SimpleGrantedAuthority("ROLE_USER"));
 

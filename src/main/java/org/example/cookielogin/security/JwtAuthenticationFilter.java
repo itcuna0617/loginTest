@@ -46,7 +46,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
             log.info("Access Token : " + accessToken);
             log.info("Refresh Token : " + refreshToken);
 
-            log.info(jwtTokenProvider.validateToken(accessToken));
+//            log.info(jwtTokenProvider.validateToken(accessToken));
 
             // 2. Access Token 유효성 검사
             if (accessToken != null && jwtTokenProvider.validateToken(accessToken)) {

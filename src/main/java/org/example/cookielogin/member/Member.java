@@ -26,7 +26,7 @@ public class Member {
     private String password;      // 비밀번호
 
 //    @ElementCollection(fetch= FetchType.EAGER)
-    @ElementCollection(fetch= FetchType.LAZY)
+    @ElementCollection(fetch= FetchType.EAGER)
     @Builder.Default
     private List<MemberRole> memberRoleList = new ArrayList<>();
 

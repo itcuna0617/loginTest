@@ -42,12 +42,12 @@ public class JwtTokenProvider {
     }
 
     // 유저 정보를 통해 AccessToken, RefreshToken을 생성하는 메서드
-    public TokenInfo generateToken(String email, String name, List<MemberRole> roles){
+    public TokenInfo generateToken(String email, String nickname, List<MemberRole> roles){
         log.info("######################### JwtTokenProvider -> generateToken() 메서드 내부 ########################");
         // Claims 설정
         // claims : JWT payload에 저장되는 정보 단위
         Claims claims = Jwts.claims().setSubject(email);
-        claims.put("name", name);
+        claims.put("nickname", nickname);
         claims.put("roles", roles.stream().map(MemberRole::toString).collect(Collectors.toList()));
 
         Date now = new Date();

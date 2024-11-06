@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.log4j.Log4j2;
 import org.example.cookielogin.member.Member;
 import org.example.cookielogin.member.MemberRepository;
+import org.example.cookielogin.member.MemberRole;
 import org.example.cookielogin.security.dto.TokenInfo;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
@@ -14,6 +15,7 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.Optional;
 
 @Log4j2
@@ -32,16 +34,40 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
                                         Authentication authentication) throws IOException, ServletException {
         // 여기에 로그인 성공 후 처리할 내용을 작성하기!
         DefaultOAuth2User oAuth2User = (DefaultOAuth2User) authentication.getPrincipal();
+        log.info("authentication : " + authentication);
+
         if (isUser(oAuth2User)) {
 
         String userId = authentication.getName();
+        String email = (String) ((Map)oAuth2User.getAttributes().get("kakao_account")).get("email");
+        String nickname = (String) ((Map)((Map)oAuth2User.getAttributes().get("kakao_account")).get("profile")).get("nickname");
+        String profileImage = (String) ((Map)oAuth2User.getAttributes().get("properties")).get("profile_image");
 
         log.info("userId = " + userId);
+        log.info("email = " + email);
+        log.info("nickname = " + nickname);
+        log.info("profileImage = " + profileImage);
 
-        Optional<Member> optionalMember = memberRepository.findByEmail(userId);
+        Optional<Member> optionalMember = memberRepository.findByEmail(email);
+
+        log.info("optionalMember = " + optionalMember);
         Member member;
 
-        member = optionalMember.get();
+        if (optionalMember.isPresent()) {
+            member = optionalMember.get();
+        } else{
+            member = Member.builder()
+                    .oauthId(userId)
+                    .name(nickname)
+                    .email(email)
+                    .profileImage(profileImage)
+                    .nickname(nickname)
+                    .build();
+
+            member.addRole(MemberRole.USER);
+
+            memberRepository.save(member);
+        }
 
         log.info("member = " + member);
 

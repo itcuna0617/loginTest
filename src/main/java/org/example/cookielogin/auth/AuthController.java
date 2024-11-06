@@ -32,7 +32,7 @@ public class AuthController {
     @Autowired
     private SecurityUserDetailService userDetailService;
 
-    @PostMapping("/login")
+    @PostMapping("/formLogin")
     public Map login(@RequestBody Map<String, String> user, HttpServletResponse response){
         log.info(user.get("email"));
         log.info(user.get("password"));
@@ -46,14 +46,14 @@ public class AuthController {
 //        return authService.handleOAuth2Login(authentication, response);
 //    }
 
-    @GetMapping("/login/oauth2/kakao")
-    public ResponseEntity<?> oauth2Login(OAuth2AuthenticationToken authentication, HttpServletResponse response) {
-
-        log.info("login 실행");
-        log.info("OAuth2AuthenticationToken: " + authentication);
-        // OAuth2 인증 정보로 사용자 로그인 처리
-        return authService.handleOAuth2Login(authentication, response);
-    }
+//    @GetMapping("/login/oauth2/kakao")
+//    public ResponseEntity<?> oauth2Login(OAuth2AuthenticationToken authentication, HttpServletResponse response) {
+//
+//        log.info("login 실행");
+//        log.info("OAuth2AuthenticationToken: " + authentication);
+//        // OAuth2 인증 정보로 사용자 로그인 처리
+//        return authService.handleOAuth2Login(authentication, response);
+//    }
 
     @PostMapping("/logout")
     public String logout(HttpServletRequest request, HttpServletResponse response){
@@ -76,7 +76,7 @@ public class AuthController {
             refreshToken.setMaxAge(0); // 쿠키의 유효 기간을 0으로 설정하여 삭제
             response.addCookie(refreshToken); // 응답에 쿠키 추가
 
-            response.setHeader("authorization", "");
+            response.setHeader("Authorization", "");
         }
 
         return "로그아웃 완료!";
@@ -84,10 +84,15 @@ public class AuthController {
 
     @GetMapping("/test")
     public String test(HttpServletResponse response){
-        if(response.getHeader("authorization") != null){
-            return response.getHeader("authorization").substring(7);
+        log.info(response.getHeader("Authorization"));
+        if(response.getHeader("Authorization") != null){
+            return response.getHeader("Authorization").substring(7);
         }
-        return response.getHeader("authorization");
+        return response.getHeader("Authorization");
     }
 
+    @GetMapping("/access-user")
+    public String access(HttpServletResponse response){
+        return "로그인 성공!";
+    }
 }

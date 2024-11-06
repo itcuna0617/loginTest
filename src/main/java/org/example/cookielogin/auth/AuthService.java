@@ -81,7 +81,7 @@ public class AuthService {
         refreshToken.setHttpOnly(true);
         response.addCookie(refreshToken);
 
-        response.setHeader("Set-Cookie", "");
+//        response.setHeader("Set-Cookie", "refreshToken");
 
         // 쿠키를 HttpServletResponse에 추가
 //        response.addCookie(accessToken);
